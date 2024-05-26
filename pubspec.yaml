@@ -1,6 +1,6 @@
 name: stream_typewriter_text
-description: "A new Flutter plugin project."
-version: 1.0.0
+description: "Stream Typewriter Text is a Flutter package that provides a typewriter text animation effect."
+version: 1.0.1
 repository: https://github.com/hantrungkien/stream-typewriter-text
 maintainer: KienHT
 
@@ -19,3 +19,11 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
