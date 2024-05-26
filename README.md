@@ -10,10 +10,13 @@
       alt="Pub Package" />
   </a>
   <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/github/license/hantrungkien/stream_typewriter_text?color=red"
+    <img src="https://img.shields.io/github/license/hantrungkien/stream-typewriter-text"
       alt="License: MIT" />
   </a>
+  <br>
 </p><br>
+
+https://github.com/hantrungkien/stream-typewriter-text/assets/20286370/35f74fb9-8f26-4853-8453-ccab693ed804
 
 # Installing
 
