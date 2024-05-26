@@ -2,6 +2,8 @@
 
 <p align="center">Stream Typewriter Text is a Flutter package that provides a typewriter text animation effect.</p><br>
 
+<p align="center"><img src="/media/screen_record.gif" width="256"/></p><br>
+
 <p align="center">
   <a href="https://flutter.dev">
     <img src="https://img.shields.io/badge/Platform-Flutter-02569B?logo=flutter"
@@ -17,8 +19,6 @@
   </a>
   <br>
 </p><br>
-
-![screenshot](/media/screen_record.gif)
 
 # Installing
 
