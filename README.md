@@ -2,7 +2,7 @@
 
 <p align="center">Stream Typewriter Text is a Flutter package that provides a typewriter text animation effect.</p><br>
 
-<p align="center"><img src="/media/screen_record.gif" width="256"/></p><br>
+<p align="center"><img src="https://github.com/hantrungkien/stream-typewriter-text/blob/main/media/screen_record.gif" width="256"/></p><br>
 
 <p align="center">
   <a href="https://flutter.dev">
@@ -28,7 +28,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  stream_typewriter_text: ^1.0.2
+  stream_typewriter_text: ^1.0.3
 ```
 
 ### 2. Install it
