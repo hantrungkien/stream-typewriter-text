@@ -18,7 +18,7 @@
   <br>
 </p><br>
 
-https://github.com/hantrungkien/stream-typewriter-text/assets/20286370/35f74fb9-8f26-4853-8453-ccab693ed804
+![screenshot](/media/screen_record.gif)
 
 # Installing
 
@@ -28,7 +28,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  stream_typewriter_text: ^1.0.1
+  stream_typewriter_text: ^1.0.2
 ```
 
 ### 2. Install it
