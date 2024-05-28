@@ -42,12 +42,15 @@ class _StreamTypewriterAnimatedTextState
   Widget? _child;
   MMTypewriterAnimatedText? _typewriterAnimatedText;
   int _lengthAlreadyShown = 0;
+  bool _didExceedMaxLines = false;
 
   @override
   void didUpdateWidget(covariant StreamTypewriterAnimatedText oldWidget) {
     final typewriterAnimatedText = _typewriterAnimatedText;
-    if (widget.text != oldWidget.text && typewriterAnimatedText != null) {
-      _lengthAlreadyShown = widget.text.startsWith(oldWidget.text)
+    if (widget.text != oldWidget.text) {
+      _didExceedMaxLines = false;
+      _lengthAlreadyShown = typewriterAnimatedText != null &&
+              widget.text.startsWith(oldWidget.text)
           ? typewriterAnimatedText.visibleString.length
           : 0;
     }
@@ -57,6 +60,9 @@ class _StreamTypewriterAnimatedTextState
   @override
   Widget build(BuildContext context) {
     if (widget.maxLines != null) {
+      if (_didExceedMaxLines && _child != null) {
+        return _child!;
+      }
       return LayoutBuilder(
         builder: (context, constraints) {
           assert(constraints.hasBoundedWidth);
@@ -70,16 +76,14 @@ class _StreamTypewriterAnimatedTextState
             locale: Localizations.maybeLocaleOf(context),
           );
           textPainter.layout(minWidth: 0, maxWidth: maxWidth);
-          bool reachLimit = textPainter.didExceedMaxLines;
-          if (!reachLimit) {
-            _createNewWidget();
-          }
-          return _child ?? const SizedBox.shrink();
+          _didExceedMaxLines = textPainter.didExceedMaxLines;
+          _createNewWidget();
+          return _child!;
         },
       );
     } else {
       _createNewWidget();
-      return _child ?? const SizedBox.shrink();
+      return _child!;
     }
   }
 
