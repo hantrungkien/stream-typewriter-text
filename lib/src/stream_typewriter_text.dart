@@ -48,9 +48,11 @@ class _StreamTypewriterAnimatedTextState
   void didUpdateWidget(covariant StreamTypewriterAnimatedText oldWidget) {
     final typewriterAnimatedText = _typewriterAnimatedText;
     if (widget.text != oldWidget.text) {
-      _didExceedMaxLines = false;
-      _lengthAlreadyShown = typewriterAnimatedText != null &&
-              widget.text.startsWith(oldWidget.text)
+      final startsWithOldText = widget.text.startsWith(oldWidget.text);
+      if (_didExceedMaxLines && !startsWithOldText) {
+        _didExceedMaxLines = false;
+      }
+      _lengthAlreadyShown = typewriterAnimatedText != null && startsWithOldText
           ? typewriterAnimatedText.visibleString.length
           : 0;
     }
@@ -95,16 +97,10 @@ class _StreamTypewriterAnimatedTextState
       lengthAlreadyShown: _lengthAlreadyShown,
       maxLines: widget.maxLines,
       overflow: widget.overflow,
-      speed: widget.speed,
-      curve: widget.curve,
-      cursor: widget.cursor,
     );
     _child = AnimatedTextKit(
       key: ValueKey(widget.text.hashCode),
-      isRepeatingAnimation: widget.isRepeatingAnimation,
-      totalRepeatCount: widget.totalRepeatCount,
-      repeatForever: widget.repeatForever,
-      onFinished: widget.onFinished,
+      isRepeatingAnimation: false,
       animatedTexts: [_typewriterAnimatedText!],
     );
   }
