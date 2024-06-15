@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Base class for Animated Text widgets.
 class AnimatedTextKit extends StatefulWidget {
@@ -57,6 +58,8 @@ class AnimatedTextKit extends StatefulWidget {
   /// By default it is set to 3
   final int totalRepeatCount;
 
+  final bool isHapticFeedbackEnabled;
+
   const AnimatedTextKit({
     super.key,
     required this.animatedTexts,
@@ -70,6 +73,7 @@ class AnimatedTextKit extends StatefulWidget {
     this.isRepeatingAnimation = true,
     this.totalRepeatCount = 3,
     this.repeatForever = false,
+    this.isHapticFeedbackEnabled = false,
   })  : assert(animatedTexts.length > 0),
         assert(!isRepeatingAnimation || totalRepeatCount > 0 || repeatForever),
         assert(null == onFinished || !repeatForever);
@@ -92,6 +96,7 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
   bool _isCurrentlyPausing = false;
 
   Timer? _timer;
+  Timer? _hapticFeedbackDebounce;
 
   @override
   void initState() {
@@ -102,6 +107,7 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
   @override
   void dispose() {
     _timer?.cancel();
+    _hapticFeedbackDebounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -115,7 +121,12 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
         ? completeText
         : AnimatedBuilder(
             animation: _controller,
-            builder: _currentAnimatedText.animatedBuilder,
+            builder: (context, child) {
+              if (widget.isHapticFeedbackEnabled) {
+                _hapticFeedback();
+              }
+              return _currentAnimatedText.animatedBuilder(context, child);
+            },
             child: completeText,
           );
 
@@ -225,5 +236,14 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
     }
 
     widget.onTap?.call();
+  }
+
+  void _hapticFeedback() {
+    final debounce = _hapticFeedbackDebounce;
+    if (debounce != null && debounce.isActive) debounce.cancel();
+    _hapticFeedbackDebounce =
+        Timer(Duration(milliseconds: 10 + Random().nextInt(7)), () {
+      HapticFeedback.mediumImpact();
+    });
   }
 }

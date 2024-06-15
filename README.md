@@ -28,7 +28,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  stream_typewriter_text: ^1.0.6
+  stream_typewriter_text: ^1.0.7
 ```
 
 ### 2. Install it

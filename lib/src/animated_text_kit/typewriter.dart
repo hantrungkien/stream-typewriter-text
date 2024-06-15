@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// character at a time. Similar to [TypeAnimatedText], but shows a cursor.
 ///
 /// ![Typewriter example](https://raw.githubusercontent.com/aagarwal1012/Animated-Text-Kit/master/display/typewriter.gif)
-class MMTypewriterAnimatedText extends AnimatedText {
+class TypewriterAnimatedText extends AnimatedText {
   // The text length is padded to cause extra cursor blinking after typing.
   static const extraLengthForBlinks = 8;
 
@@ -22,6 +22,7 @@ class MMTypewriterAnimatedText extends AnimatedText {
   /// Cursor text. Defaults to underscore.
   final String cursor;
 
+  /// @author: klever - BLOKPARTi
   final int? maxLines;
   final TextOverflow overflow;
   final int lengthAlreadyShown;
@@ -29,7 +30,7 @@ class MMTypewriterAnimatedText extends AnimatedText {
 
   String get visibleString => _visibleString;
 
-  MMTypewriterAnimatedText(
+  TypewriterAnimatedText(
       String text, {
         super.textAlign,
         super.textStyle,

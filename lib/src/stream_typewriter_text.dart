@@ -8,12 +8,14 @@ class StreamTypewriterAnimatedText extends StatefulWidget {
   final TextStyle? style;
   final int? maxLines;
   final TextOverflow overflow;
+  final Duration pause;
   final Duration speed;
   final Curve curve;
   final String cursor;
   final bool isRepeatingAnimation;
   final bool repeatForever;
   final int totalRepeatCount;
+  final bool isHapticFeedbackEnabled;
   final VoidCallback? onFinished;
 
   const StreamTypewriterAnimatedText({
@@ -24,11 +26,13 @@ class StreamTypewriterAnimatedText extends StatefulWidget {
     this.maxLines,
     this.overflow = TextOverflow.clip,
     this.speed = const Duration(milliseconds: 30),
+    this.pause = const Duration(milliseconds: 1000),
     this.curve = Curves.linear,
     this.cursor = '_',
     this.isRepeatingAnimation = false,
     this.totalRepeatCount = 3,
     this.repeatForever = false,
+    this.isHapticFeedbackEnabled = false,
     this.onFinished,
   });
 
@@ -40,7 +44,7 @@ class StreamTypewriterAnimatedText extends StatefulWidget {
 class _StreamTypewriterAnimatedTextState
     extends State<StreamTypewriterAnimatedText> {
   Widget? _child;
-  MMTypewriterAnimatedText? _typewriterAnimatedText;
+  TypewriterAnimatedText? _typewriterAnimatedText;
   int _lengthAlreadyShown = 0;
   bool _didExceedMaxLines = false;
 
@@ -77,31 +81,48 @@ class _StreamTypewriterAnimatedTextState
             ellipsis: widget.overflow == TextOverflow.ellipsis ? '...' : null,
             locale: Localizations.maybeLocaleOf(context),
           );
-          textPainter.layout(minWidth: 0, maxWidth: maxWidth);
+          textPainter.layout(
+              minWidth: constraints.minWidth, maxWidth: maxWidth);
           _didExceedMaxLines = textPainter.didExceedMaxLines;
-          _createNewWidget();
+          if (_didExceedMaxLines) {
+            final textSize = textPainter.size;
+            final pos = textPainter.getPositionForOffset(
+              textSize.bottomRight(Offset.zero),
+            );
+            _createNewWidget(widget.text.substring(0, pos.offset));
+          } else {
+            _createNewWidget(widget.text);
+          }
           return _child!;
         },
       );
     } else {
-      _createNewWidget();
+      _createNewWidget(widget.text);
       return _child!;
     }
   }
 
-  _createNewWidget() {
-    _typewriterAnimatedText = MMTypewriterAnimatedText(
-      widget.text,
+  _createNewWidget(String text) {
+    _typewriterAnimatedText = TypewriterAnimatedText(
+      text,
       textAlign: widget.textAlign,
       textStyle: widget.style,
       lengthAlreadyShown: _lengthAlreadyShown,
       maxLines: widget.maxLines,
       overflow: widget.overflow,
+      cursor: widget.cursor,
+      curve: widget.curve,
+      speed: widget.speed,
     );
     _child = AnimatedTextKit(
-      key: ValueKey(widget.text.hashCode),
-      isRepeatingAnimation: false,
+      key: ValueKey(text.hashCode),
+      pause: widget.pause,
+      isRepeatingAnimation: widget.isRepeatingAnimation,
       animatedTexts: [_typewriterAnimatedText!],
+      repeatForever: widget.repeatForever,
+      totalRepeatCount: widget.totalRepeatCount,
+      isHapticFeedbackEnabled: widget.isHapticFeedbackEnabled,
+      onFinished: widget.onFinished,
     );
   }
 }

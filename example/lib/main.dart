@@ -51,8 +51,8 @@ class _MyAppState extends State<MyApp> {
                     minWidth: 96,
                     maxWidth: MediaQuery.sizeOf(context).width - 48,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
                     child: StreamBuilder(
                       stream: _streamController.stream,
                       builder: (context, snapshot) {
@@ -66,6 +66,9 @@ class _MyAppState extends State<MyApp> {
                           ),
                           maxLines: 5,
                           overflow: TextOverflow.ellipsis,
+                          isHapticFeedbackEnabled: true,
+                          speed: const Duration(milliseconds: 30),
+                          pause: const Duration(milliseconds: 100),
                         );
                       },
                     ),
