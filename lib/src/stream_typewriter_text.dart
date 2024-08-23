@@ -38,10 +38,10 @@ class StreamTypewriterAnimatedText extends StatefulWidget {
 
   @override
   State<StreamTypewriterAnimatedText> createState() =>
-      _StreamTypewriterAnimatedTextState();
+      StreamTypewriterAnimatedTextState();
 }
 
-class _StreamTypewriterAnimatedTextState
+class StreamTypewriterAnimatedTextState
     extends State<StreamTypewriterAnimatedText> {
   Widget? _child;
   TypewriterAnimatedText? _typewriterAnimatedText;
@@ -60,6 +60,10 @@ class _StreamTypewriterAnimatedTextState
           ? typewriterAnimatedText.visibleString.length
           : 0;
     }
+    if (widget.style != oldWidget.style) {
+      _didExceedMaxLines = false;
+      _lengthAlreadyShown = 0;
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -67,6 +71,11 @@ class _StreamTypewriterAnimatedTextState
   Widget build(BuildContext context) {
     if (widget.maxLines != null) {
       if (_didExceedMaxLines && _child != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            widget.onFinished?.call();
+          }
+        });
         return _child!;
       }
       return LayoutBuilder(
@@ -82,7 +91,9 @@ class _StreamTypewriterAnimatedTextState
             locale: Localizations.maybeLocaleOf(context),
           );
           textPainter.layout(
-              minWidth: constraints.minWidth, maxWidth: maxWidth);
+            minWidth: constraints.minWidth,
+            maxWidth: maxWidth,
+          );
           _didExceedMaxLines = textPainter.didExceedMaxLines;
           if (_didExceedMaxLines) {
             final textSize = textPainter.size;
@@ -93,6 +104,7 @@ class _StreamTypewriterAnimatedTextState
           } else {
             _createNewWidget(widget.text);
           }
+          textPainter.dispose();
           return _child!;
         },
       );
@@ -113,15 +125,23 @@ class _StreamTypewriterAnimatedTextState
       cursor: widget.cursor,
       curve: widget.curve,
       speed: widget.speed,
+      isHapticFeedbackEnabled: widget.isHapticFeedbackEnabled,
     );
+    final valueKey = ValueKey(text.hashCode + widget.style.hashCode);
+    if (_child != null && _child!.key == valueKey) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onFinished?.call();
+        }
+      });
+    }
     _child = AnimatedTextKit(
-      key: ValueKey(text.hashCode),
+      key: valueKey,
       pause: widget.pause,
       isRepeatingAnimation: widget.isRepeatingAnimation,
       animatedTexts: [_typewriterAnimatedText!],
       repeatForever: widget.repeatForever,
       totalRepeatCount: widget.totalRepeatCount,
-      isHapticFeedbackEnabled: widget.isHapticFeedbackEnabled,
       onFinished: widget.onFinished,
     );
   }

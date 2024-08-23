@@ -58,8 +58,6 @@ class AnimatedTextKit extends StatefulWidget {
   /// By default it is set to 3
   final int totalRepeatCount;
 
-  final bool isHapticFeedbackEnabled;
-
   const AnimatedTextKit({
     super.key,
     required this.animatedTexts,
@@ -73,17 +71,16 @@ class AnimatedTextKit extends StatefulWidget {
     this.isRepeatingAnimation = true,
     this.totalRepeatCount = 3,
     this.repeatForever = false,
-    this.isHapticFeedbackEnabled = false,
   })  : assert(animatedTexts.length > 0),
         assert(!isRepeatingAnimation || totalRepeatCount > 0 || repeatForever),
         assert(null == onFinished || !repeatForever);
 
   /// Creates the mutable state for this widget. See [StatefulWidget.createState].
   @override
-  _AnimatedTextKitState createState() => _AnimatedTextKitState();
+  AnimatedTextKitState createState() => AnimatedTextKitState();
 }
 
-class _AnimatedTextKitState extends State<AnimatedTextKit>
+class AnimatedTextKitState extends State<AnimatedTextKit>
     with TickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -96,7 +93,6 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
   bool _isCurrentlyPausing = false;
 
   Timer? _timer;
-  Timer? _hapticFeedbackDebounce;
 
   @override
   void initState() {
@@ -107,7 +103,6 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
   @override
   void dispose() {
     _timer?.cancel();
-    _hapticFeedbackDebounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -120,22 +115,17 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
     final child = _isCurrentlyPausing || !_controller.isAnimating
         ? completeText
         : AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              if (widget.isHapticFeedbackEnabled) {
-                _hapticFeedback();
-              }
-              return _currentAnimatedText.animatedBuilder(context, child);
-            },
-            child: completeText,
-          );
+      animation: _controller,
+      builder: _currentAnimatedText.animatedBuilder,
+      child: completeText,
+    );
 
     return canTap
         ? GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _onTap,
-            child: child,
-          )
+      behavior: HitTestBehavior.opaque,
+      onTap: _onTap,
+      child: child,
+    )
         : child;
   }
 
@@ -236,14 +226,5 @@ class _AnimatedTextKitState extends State<AnimatedTextKit>
     }
 
     widget.onTap?.call();
-  }
-
-  void _hapticFeedback() {
-    final debounce = _hapticFeedbackDebounce;
-    if (debounce != null && debounce.isActive) debounce.cancel();
-    _hapticFeedbackDebounce =
-        Timer(Duration(milliseconds: 10 + Random().nextInt(7)), () {
-      HapticFeedback.mediumImpact();
-    });
   }
 }

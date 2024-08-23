@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Animated Text that displays a [Text] element as if it is being typed one
 /// character at a time. Similar to [TypeAnimatedText], but shows a cursor.
@@ -27,6 +28,7 @@ class TypewriterAnimatedText extends AnimatedText {
   final TextOverflow overflow;
   final int lengthAlreadyShown;
   String _visibleString = '';
+  final bool isHapticFeedbackEnabled;
 
   String get visibleString => _visibleString;
 
@@ -40,6 +42,7 @@ class TypewriterAnimatedText extends AnimatedText {
         this.maxLines,
         this.overflow = TextOverflow.clip,
         this.cursor = '_',
+        this.isHapticFeedbackEnabled = false,
       }) : super(
     text: text,
     duration: speed * (text.characters.length + extraLengthForBlinks),
@@ -52,11 +55,21 @@ class TypewriterAnimatedText extends AnimatedText {
       speed *
           (textCharacters.length + extraLengthForBlinks - _typewriterText.value);
 
+  var prevValue = 0.0;
+
   @override
   void initAnimation(AnimationController controller) {
     _typewriterText = CurveTween(
       curve: curve,
     ).animate(controller);
+
+    _typewriterText.addListener(() {
+      final currentValue = _typewriterText.value;
+      if (currentValue - prevValue >= 0.035) {
+        prevValue = currentValue;
+        HapticFeedback.mediumImpact();
+      }
+    });
   }
 
   @override
@@ -67,7 +80,7 @@ class TypewriterAnimatedText extends AnimatedText {
         TextSpan(
           text: cursor,
           style: const TextStyle(color: Colors.transparent),
-        )
+        ),
       ],
       style: DefaultTextStyle.of(context).style.merge(textStyle),
     ),
@@ -108,7 +121,7 @@ class TypewriterAnimatedText extends AnimatedText {
             text: cursor,
             style:
             showCursor ? null : const TextStyle(color: Colors.transparent),
-          )
+          ),
         ],
         style: DefaultTextStyle.of(context).style.merge(textStyle),
       ),

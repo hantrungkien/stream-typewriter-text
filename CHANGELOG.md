@@ -1,3 +1,8 @@
+## 1.0.8
+
+- improve onFinished callback
+- update HapticFeedback when text is animating
+
 ## 1.0.7
 
 - improve animation when textPainter.didExceedMaxLines = true
